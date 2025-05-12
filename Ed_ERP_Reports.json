@@ -1,0 +1,149 @@
+{
+  "name": "Ed ERP Reports",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://limutea.share.zrok.io/api/crystalreports/index.php",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n\t\"category\": \"item\",\n\t\"baseUrl\": \"https://limutea.share.zrok.io\",\n  \"fromdate\": \"2025-05-12\",\n  \"todate\": \"2025-05-12\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "ce4ca32b-9c2a-45da-9536-982d7e275b63",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Initialize totals\nlet totalRevenue = 0;\nlet totalCost = 0;\nlet totalMargin = 0;\nconst data =  $input.first().json.data\n\n// Loop through each item\nfor (const item of data) {\n\n  totalRevenue += parseFloat(item.total_sales);\n  totalCost += parseFloat(item.cost);\n  totalMargin += parseFloat(item.margin);\n}\n\n// Return totals as a single item\nreturn [\n  {\n    json: {\n      totalRevenue,\n      totalCost,\n      totalMargin\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        0
+      ],
+      "id": "c14fe5f7-8641-4baa-ae41-2ea35e41a462",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        440,
+        0
+      ],
+      "id": "eef9fb05-c41e-4a04-9e4c-59140ba1f66d",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "chatId": "7219119587",
+        "text": "=Today Stats\nTotal Sales made: {{ ($json.totalRevenue).toFixed(2) }}\nTotal Profit made: {{ ($json.totalMargin).toFixed(2) }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        0
+      ],
+      "id": "11c7c71f-70b0-44bc-a2fa-3223b5fd6a15",
+      "name": "Telegram",
+      "webhookId": "48fe19d0-3d3b-4a94-b3db-6a9b13c50123",
+      "credentials": {
+        "telegramApi": {
+          "id": "EWl5JvpDBM6qRXwL",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 21
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "65cc05a5-62d9-4e3d-9de4-1b38e38cb15c",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b5807b1d-aa7f-4b88-9fb4-fff0131c81c3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a5ad660676cf0daa676be4e32078322ddf3238442ea6de13c1c05b645cf1e707"
+  },
+  "id": "EZXj7RrhocWh25Bw",
+  "tags": []
+}
