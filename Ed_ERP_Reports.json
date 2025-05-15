@@ -4,18 +4,15 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://limutea.share.zrok.io/api/crystalreports/index.php",
+        "url": "https://endpoint",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\n\t\"category\": \"item\",\n\t\"baseUrl\": \"https://limutea.share.zrok.io\",\n  \"fromdate\": \"2025-05-12\",\n  \"todate\": \"2025-05-12\"\n}",
+        "jsonBody": "{\n\t\"category\": \"item\",\n\t\"baseUrl\": \"https://endpoint\",\n  \"fromdate\": \"2025-05-12\",\n  \"todate\": \"2025-05-12\"\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        220,
-        0
-      ],
+      "position": [220, 0],
       "id": "ce4ca32b-9c2a-45da-9536-982d7e275b63",
       "name": "HTTP Request"
     },
@@ -25,10 +22,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        660,
-        0
-      ],
+      "position": [660, 0],
       "id": "c14fe5f7-8641-4baa-ae41-2ea35e41a462",
       "name": "Code"
     },
@@ -39,10 +33,7 @@
       },
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
-      "position": [
-        440,
-        0
-      ],
+      "position": [440, 0],
       "id": "eef9fb05-c41e-4a04-9e4c-59140ba1f66d",
       "name": "Aggregate"
     },
@@ -54,10 +45,7 @@
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
-      "position": [
-        880,
-        0
-      ],
+      "position": [880, 0],
       "id": "11c7c71f-70b0-44bc-a2fa-3223b5fd6a15",
       "name": "Telegram",
       "webhookId": "48fe19d0-3d3b-4a94-b3db-6a9b13c50123",
@@ -80,10 +68,7 @@
       },
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [
-        0,
-        0
-      ],
+      "position": [0, 0],
       "id": "65cc05a5-62d9-4e3d-9de4-1b38e38cb15c",
       "name": "Schedule Trigger"
     }
