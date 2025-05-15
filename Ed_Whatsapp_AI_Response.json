@@ -1,0 +1,186 @@
+{
+  "name": "Ed Whatsapp AI Response",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        240
+      ],
+      "id": "40bc3bf2-5273-448a-acf5-9dde703b6ed1",
+      "name": "WhatsApp Trigger",
+      "webhookId": "35ae755a-1be7-4fe0-9c23-56f62e0c08b6",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "fZlrXzrKPAwUTXwt",
+          "name": "Ed WhatsApp OAuth account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are my assistant. Reply concisely to this message from  {{ $json.contacts[0].profile.name }}: {{ $json.messages[0].text.body }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        1340,
+        240
+      ],
+      "id": "777a8760-3f80-4542-a9da-cfd4a33f2778",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1220,
+        500
+      ],
+      "id": "96adb257-2c56-4b23-b6de-613fdbaedd3d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "bT1qRci6VVoWzZs9",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### 🪜 Generate a Permanent Token for your \"Send WhatsApp Message\" node.\n\n1. Go to [https://business.facebook.com/](https://business.facebook.com/)\n2. Click on \"Business Settings\"\n3. Under \"Users\" select \"System users\"\n4. Create a new \"System user name\", give it any name and as \"System user role\" you choose \"admin\"\n5. Click than \"Generate new token\"\n6. Select the App you recently created on in your business portfolio\n7. For Token expiration choose \"never\". Click generate token.\n8. Use this token for the WhatsApp \n\n\nPermissions needed for System User:\n   - `whatsapp_business_management`\n   - `whatsapp_business_messaging`\n   - `business_management`\n\n\n\n\nTroubleshooting:\n\nWhen you receive a error when trying to send WhatsApp messages make sure that your app is under \"Assigned assets\" for the freshly created \"System user\".",
+        "height": 980,
+        "width": 780,
+        "color": 3
+      },
+      "id": "6429e5c3-7046-4b75-a477-1f63553e3e46",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "686133757907903",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        240
+      ],
+      "id": "0a1790a7-5bcb-43a0-880b-8914f183846e",
+      "name": "Send WhatsApp Message",
+      "webhookId": "455104a9-a820-4e2c-a1d9-eeacccf7b58a",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "3j1D10gfsJ9kVyhk",
+          "name": "Edwin Whatsapp Creds"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        1440,
+        460
+      ],
+      "id": "acda1c12-f813-448f-8daf-a49b12a543d9",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "HFyl9UBpzZHq7Wme",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "84208a12-7328-4de2-b6ad-5a4c5e7b7e29",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a5ad660676cf0daa676be4e32078322ddf3238442ea6de13c1c05b645cf1e707"
+  },
+  "id": "i9tQVunq8A4s6JSA",
+  "tags": []
+}
