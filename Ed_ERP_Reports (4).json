@@ -1,0 +1,840 @@
+{
+  "name": "Ed ERP Reports",
+  "nodes": [
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        340,
+        20
+      ],
+      "id": "eef9fb05-c41e-4a04-9e4c-59140ba1f66d",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "chatId": "7219119587",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1320,
+        -280
+      ],
+      "id": "11c7c71f-70b0-44bc-a2fa-3223b5fd6a15",
+      "name": "Telegram",
+      "webhookId": "48fe19d0-3d3b-4a94-b3db-6a9b13c50123",
+      "credentials": {
+        "telegramApi": {
+          "id": "EWl5JvpDBM6qRXwL",
+          "name": "Bot Sales"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -240,
+        -420
+      ],
+      "id": "58b013ba-4cbc-4edc-a60b-685825a289c6",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst data = $input.first().json.data\nlet z = []\nfor (const item of data) {\n  const result  = item.items\n\n  const x = {\n    data: result\n  }\n\n  z.push(x)\n\n}\n\nreturn z;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        -420
+      ],
+      "id": "947500e1-b96b-46fb-be88-7c1f9da8c8e7",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst data = $input.first().json.data\nlet z = []\nfor (const item of data) {\n  const itemqty = parseFloat(item.stock_quantity)\n  if(itemqty < 5 && item.days_in_inventory < '10' ){\n    z.push(item)\n  }\n  \n}\nreturn {data: z};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        620,
+        -420
+      ],
+      "id": "c8972e36-2b97-437b-8448-7903b1c797dc",
+      "name": "Qty Less than 5 inn last 10 days"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        820,
+        -260
+      ],
+      "id": "d44f7216-b6c6-4a9e-881b-53cd183d7e00",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "bT1qRci6VVoWzZs9",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "1"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1060,
+        -280
+      ],
+      "id": "c9261566-f962-4cdf-bc8d-2f14f94468bc",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "chatId": "7219119587",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1460,
+        120
+      ],
+      "id": "051abfe2-6c80-49d8-85d6-e5879a42c017",
+      "name": "Telegram1",
+      "webhookId": "48fe19d0-3d3b-4a94-b3db-6a9b13c50123",
+      "credentials": {
+        "telegramApi": {
+          "id": "EWl5JvpDBM6qRXwL",
+          "name": "Bot Sales"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Access Client's Products\n\n",
+        "height": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        40,
+        -540
+      ],
+      "id": "ab8f8fd5-f0a9-443f-a7c4-6b4597ce0b20",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Function to get products below client's thresh-hold\n\n",
+        "height": 400,
+        "width": 260,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -540
+      ],
+      "id": "260ba7a7-597d-4839-8b0a-cc6fa8550797",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Generate personalized alert message to branch manager\n\n",
+        "height": 400,
+        "width": 420,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        780,
+        -540
+      ],
+      "id": "f1c12c87-0157-4e61-8be6-88a8817ec1ea",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## trigger restocking actions\n",
+        "height": 520,
+        "width": 500,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1580,
+        -620
+      ],
+      "id": "aa1fcb85-7e65-4129-af54-23b4afe4014b",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://0a43-41-90-41-73.ngrok-free.app/api/cashiers.php",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\t\"category\": \"cashier_variance\",\n\t\"server_id\": \"viatu\",\n\t\"password\": \"12345*/\",\n   \"from_date\": {{ ($json.timestamp).split(\"T\")[0] }}\",\n  \"to_date\": \"{{ ($json.timestamp).split(\"T\")[0] }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        100,
+        -940
+      ],
+      "id": "e8e68086-dcb3-4c4f-b25e-523a63d5e56f",
+      "name": "HTTP Request3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Cashiers Reports\n",
+        "height": 400,
+        "width": 1680
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        -1080
+      ],
+      "id": "01849a0e-906c-416c-9b1e-f9500a7c7d5c",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://0a43-41-90-41-73.ngrok-free.app/api/index.php",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\t\"category\": \"item\",\n    \"server_id\": \"limuru\",\n\t\"password\": \"12345*/\",\n    \"fromdate\": \"{{ ($json.timestamp).split(\"T\")[0] }}\",\n    \"todate\":\"{{ ($json.timestamp).split(\"T\")[0] }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        100,
+        20
+      ],
+      "id": "ce4ca32b-9c2a-45da-9536-982d7e275b63",
+      "name": "Sales"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://0a43-41-90-41-73.ngrok-free.app/api/inventory.php",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\t\"category\": \"stock_levels\",\n\t\"server_id\": \"viatu\",\n\t\"password\": \"12345*/\",\n    \"from_date\": \"{{ ($json.timestamp).split(\"T\")[0] }}\",\n    \"to_date\": \"{{ ($json.timestamp).split(\"T\")[0] }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        100,
+        -420
+      ],
+      "id": "ef09317e-d611-442c-abb2-d2a089154964",
+      "name": "Inventory"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Initialize totals\nlet totalRevenue = 0;\nlet totalCost = 0;\nlet totalMargin = 0;\nconst data =  $input.first().json.data\n\n// Loop through each item\nfor (const z of data) {\n\n  totalRevenue += parseFloat(z.total_sales);\n  totalCost += parseFloat(z.cost);\n  totalMargin += parseFloat(z.margin);\n}\n\n//get item with highest quantity\nconst topProductsByRevenue = [...data].sort((a, b) => parseFloat(b.total_sales) - parseFloat(a.total_sales)).slice(0, 5)\n\n//get items with top margin\n\nconst topProductsByMargin = [...data].sort((a, b) => parseFloat(b.margin) - parseFloat(a.margin)).slice(0,5)\n\n// Return totals as a single item\nreturn [\n  {\n    json: {\n      totalRevenue,\n      totalCost,\n      totalMargin,\n      topProductsByRevenue,\n      topProductsByMargin\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        20
+      ],
+      "id": "c14fe5f7-8641-4baa-ae41-2ea35e41a462",
+      "name": "Function - profit | top products"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Fj9p5QyCN8WP3IC4QTG6pHsALBxHKqFFiOXUTsw9P9k",
+          "mode": "list",
+          "cachedResultName": "Viatu House",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Fj9p5QyCN8WP3IC4QTG6pHsALBxHKqFFiOXUTsw9P9k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Fj9p5QyCN8WP3IC4QTG6pHsALBxHKqFFiOXUTsw9P9k/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $('Schedule Trigger1').item.json['Readable date'] }}",
+            "Total Revenue": "={{ new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format($json.totalRevenue) }}",
+            "Total Cost": "={{ new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format($json.totalCost) }}",
+            "Total Profit": "={{ new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format($json.totalMargin) }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Total Revenue",
+              "displayName": "Total Revenue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Total Cost",
+              "displayName": "Total Cost",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Total Profit",
+              "displayName": "Total Profit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        900,
+        200
+      ],
+      "id": "36ce3db9-28a3-4c32-a381-f0588fb2a891",
+      "name": "Save Profit",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wXu9hZSV9fgtKF0m",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Fj9p5QyCN8WP3IC4QTG6pHsALBxHKqFFiOXUTsw9P9k",
+          "mode": "list",
+          "cachedResultName": "Viatu House",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Fj9p5QyCN8WP3IC4QTG6pHsALBxHKqFFiOXUTsw9P9k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Fj9p5QyCN8WP3IC4QTG6pHsALBxHKqFFiOXUTsw9P9k/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -60,
+        220
+      ],
+      "id": "ffc95ad8-2cca-4ce0-8b69-f7c2151c4c74",
+      "name": "Check if record exists",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wXu9hZSV9fgtKF0m",
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6b7aac8e-2f3b-4ed6-a188-512ccc8304c2",
+              "leftValue": "={{ $json.Date }}",
+              "rightValue": "=",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        180,
+        220
+      ],
+      "id": "0f32a690-2e3f-4b99-a8ea-3a5e7a87f355",
+      "name": "If",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Profit Analysis\n\n",
+        "height": 440,
+        "width": 2200,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        -20
+      ],
+      "id": "8eb501ec-90a2-4811-90d3-403bb8daa0c9",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Fj9p5QyCN8WP3IC4QTG6pHsALBxHKqFFiOXUTsw9P9k",
+          "mode": "list",
+          "cachedResultName": "Viatu House",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Fj9p5QyCN8WP3IC4QTG6pHsALBxHKqFFiOXUTsw9P9k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Fj9p5QyCN8WP3IC4QTG6pHsALBxHKqFFiOXUTsw9P9k/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        920,
+        20
+      ],
+      "id": "afc49514-721d-43fe-bc6a-d4a3563c90ed",
+      "name": "Get Prev record",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wXu9hZSV9fgtKF0m",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Inventory Management\n\n",
+        "height": 520,
+        "width": 1680,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        -620
+      ],
+      "id": "528d047a-ab22-487a-be18-1637351c238c",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "689334307587771",
+        "recipientPhoneNumber": "+254705982249",
+        "textBody": "={{ $json.result.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        1660,
+        120
+      ],
+      "id": "484cc9e4-9e1b-4a58-9c5e-8ca0e9c86357",
+      "name": "WhatsApp Business Cloud",
+      "webhookId": "85861192-3b1e-4c9b-b5bd-b22f7925b03c",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "3j1D10gfsJ9kVyhk",
+          "name": "Edwin Whatsapp Creds"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an inventory advisor.\nGenerate a telegram text to inform manager that the products in the list below have follen short of quantity threshold of 5 in the last 10 days. Advice the manager to consider restocking them.\n\n- Write the message in a cool and natural language starting with a simple greeting.\n- Do not mention a name in the greeting.\n- Message to be well formated, add bold where necessary.\n\nProducts:\n {{ $json.data.map(item => JSON.stringify(item)).join(',') }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        820,
+        -420
+      ],
+      "id": "34f86a4a-8910-44cc-a3e8-0d1182e0b3b4",
+      "name": "personalized alert message"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "689334307587771",
+        "recipientPhoneNumber": "+254705982249",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        -460
+      ],
+      "id": "1ae2c4b2-c6da-4310-b98a-27f9cd6c0b9a",
+      "name": "WhatsApp Business Cloud1",
+      "webhookId": "85861192-3b1e-4c9b-b5bd-b22f7925b03c",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "3j1D10gfsJ9kVyhk",
+          "name": "Edwin Whatsapp Creds"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a dynamic operations assistant for a bustling retail store. Your task is to craft an engaging and concise Telegram message for the branch manager that outlines today’s store performance based on the sales data provided. Ensure that the message feels friendly, energetic, and informative, as if sharing updates with a teammate rather than drafting a formal corporate memo.\n\n**Formatting Guidelines:**\n- Begin with a bold header: *🔥 Today's Sales Summary 🔥*\n- Do not use words line team, this message is addressed to one person\n- Present the following information clearly:\n  - **Total Revenue**\n  - **Total Margin/Profit**\n  - **Total Cost** (if it's zero, explain that margin = revenue)\n- Brief coment of the profit and revenue compared with previously recorded stats\n\n\n- If available, include:\n  - **Top Products by Revenue**\n  - **Top Products by Margin**\n  - For each product line, present:\n    - **Product Name** (in **bold**)\n    - **Value in KES**\n    \n- Incorporate emojis in titles tastefully to enhance engagement (e.g., 📦, 💰, ✅)\n\n**Input Data:**\n- Total revenue:  {{ $('Function - profit | top products').item.json.totalRevenue }} \n- Total cost: {{ $('Function - profit | top products').item.json.totalCost }} \n- Total margin/profit:   {{ $('Function - profit | top products').item.json.totalMargin }}  \n- Previously Recorded profit stats: \n  - Total Revenue: {{ $json['Total Revenue'] }} \n  - Total Cost: {{ $json['Total Cost'] }} \n  - Total Profit: {{ $json['Total Profit'] }} \n  \n- Top 5 Products - Revenue:  \n  {{ $('Function - profit | top products').item.json.topProductsByRevenue.map(p => `${p.description}: ${new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(parseFloat(p.total_sales))}`).join('\\n') }}  \n\n-------------------------------- \n\n- Top 5 Products - Profit:  \n  {{ $('Function - profit | top products').item.json.topProductsByMargin.map(p => `${p.description}: ${new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(parseFloat(p.margin))}`).join('\\n') }}  \n\nYour main goal is to ensure that the message is informative while maintaining an upbeat tone. Pay careful attention to the formatting and the use of relevant statistics to keep the manager informed efficiently.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        1120,
+        120
+      ],
+      "id": "059b7527-f0db-414b-92f3-02a18d3c78ab",
+      "name": "margin message"
+    }
+  ],
+  "pinData": {
+    "Telegram1": [
+      {
+        "json": {
+          "ok": true,
+          "result": {
+            "message_id": 51,
+            "from": {
+              "id": 7621810493,
+              "is_bot": true,
+              "first_name": "crystal reports",
+              "username": "ed_reports_bot"
+            },
+            "chat": {
+              "id": 7219119587,
+              "first_name": "Edwin",
+              "type": "private"
+            },
+            "date": 1748009816,
+            "text": "🔥 Today's Sales Summary 🔥\n\nHey there! Here’s a quick look at today’s store performance! 💪\n\n- Total Revenue: Ksh 222,357.99\n- Total Cost: Ksh 179,775.64\n- Total Margin/Profit: Ksh 42,582.35\n\n🥳 Exciting news! We're maintaining the same level of revenue and profit as recorded previously, which indicates we're doing a great job in keeping our numbers steady!\n\n📦 Top Products by Revenue:\n- Kenpoly Chair: Ksh 13,400.00\n- Sugar 1KG: Ksh 9,694.00\n- Bamati Rice 1Kg: Ksh 9,430.00\n- Ajab Ngano 2Kg: Ksh 5,240.00\n- Elianto 5L: Ksh 5,200.00\n\n💰 Top Products by Profit:\n- Kenpoly Chair: Ksh 2,365.52\n- Sugar 1KG: Ksh 1,847.45\n- Bamati Rice 1Kg: Ksh 1,113.96\n- Elianto 5L: Ksh 941.38\n- Kimbo 5L: Ksh 806.55\n\nLet’s keep up the great work! If there’s anything specific you’d like to address, just let me know! 😊",
+            "entities": [
+              {
+                "offset": 0,
+                "length": 27,
+                "type": "bold"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Function - profit | top products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram": {
+      "main": [
+        []
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Inventory",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Sales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Qty Less than 5 inn last 10 days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qty Less than 5 inn last 10 days": {
+      "main": [
+        [
+          {
+            "node": "personalized alert message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "personalized alert message",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "margin message",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "personalized alert message",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram1": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp Business Cloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        []
+      ]
+    },
+    "Sales": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inventory": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function - profit | top products": {
+      "main": [
+        [
+          {
+            "node": "Save Profit",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Prev record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if record exists": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        []
+      ]
+    },
+    "Get Prev record": {
+      "main": [
+        [
+          {
+            "node": "margin message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Profit": {
+      "main": [
+        []
+      ]
+    },
+    "personalized alert message": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp Business Cloud1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "margin message": {
+      "main": [
+        [
+          {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ce68f98d-25b6-44d8-91f8-4403436e6b97",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a5ad660676cf0daa676be4e32078322ddf3238442ea6de13c1c05b645cf1e707"
+  },
+  "id": "EZXj7RrhocWh25Bw",
+  "tags": []
+}
