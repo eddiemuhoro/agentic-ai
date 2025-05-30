@@ -1,0 +1,1155 @@
+{
+  "name": "Instagram reporpose",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "20923668-ba7d-4c97-bce5-d81b6a86a93b",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "url": "https://api.openai.com/v1/audio/transcriptions",
+        "jsonParameters": true,
+        "options": {}
+      },
+      "id": "2da4d8db-de1a-4912-b9f9-d83b3a6f2711",
+      "name": "Transcribe Audio",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        2540,
+        0
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "sheetId": "YOUR_GOOGLE_SHEET_ID",
+        "range": "Sheet1!D2:D",
+        "options": {}
+      },
+      "id": "408f294b-3e4d-4f1c-be3b-be2f997b875e",
+      "name": "Update Transcription",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        2760,
+        0
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app0AXhZfvnCn3U7W",
+          "mode": "list",
+          "cachedResultName": "Ig Scrapper",
+          "cachedResultUrl": "https://airtable.com/app0AXhZfvnCn3U7W"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblku2roYTnzzkgQA",
+          "mode": "list",
+          "cachedResultName": "Creators",
+          "cachedResultUrl": "https://airtable.com/app0AXhZfvnCn3U7W/tblku2roYTnzzkgQA"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        0
+      ],
+      "id": "3303391d-26b9-4bca-92b0-f55ca1fc71cc",
+      "name": "Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "LoFO9IsPgt57l0Cf",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        300,
+        0
+      ],
+      "id": "f27ca116-0b54-4cae-87d1-acace8b55825",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.apify.com/v2/acts/apify~instagram-scraper/run-sync-get-dataset-items?token=apify_api_jZTjBZHJ9AypNeUOLyt7jAbfx3jqly0NoOBj",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"addParentData\": false,\n    \"directUrls\": [\n        \"https://www.instagram.com/{{ $json['Creator Usename'] }}/\"\n    ],\n    \"enhanceUserSearchWithFacebookPage\": false,\n    \"isUserReelFeedURL\": false,\n    \"isUserTaggedFeedURL\": false,\n    \"onlyPostsNewerThan\": \"10 days\",\n    \"resultsLimit\": 5,\n    \"resultsType\": \"stories\",\n    \"searchLimit\": 1,\n    \"searchType\": \"hashtag\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        540,
+        20
+      ],
+      "id": "464c0ac5-0f45-4659-971b-b2d4c67e93c3",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e678411e-1083-493b-ade3-fa1ebf549e3b",
+              "name": "caption",
+              "value": "={{ $json.caption }}",
+              "type": "string"
+            },
+            {
+              "id": "454113cf-afed-4572-8d0d-1fbe7263f875",
+              "name": "videoUrl",
+              "value": "={{ $json.videoUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "8b1cd4c7-f148-45ce-992a-88dd12ee939d",
+              "name": "timestamp",
+              "value": "={{ $json.timestamp }}",
+              "type": "string"
+            },
+            {
+              "id": "483febcd-85d6-40c9-99d1-1c467cebd2c8",
+              "name": "likesCount",
+              "value": "={{ $json.likesCount }}",
+              "type": "number"
+            },
+            {
+              "id": "febe2e6e-b984-4fec-a5d8-08bb2e392ef7",
+              "name": "videoPlayCount",
+              "value": "={{ $json.videoPlayCount }}",
+              "type": "number"
+            },
+            {
+              "id": "8459581c-cbf4-431c-bbb7-06c5e55cbac3",
+              "name": "commentsCount",
+              "value": "={{ $json.commentsCount }}",
+              "type": "number"
+            },
+            {
+              "id": "d247255e-91eb-4dcd-97fe-a5942951603d",
+              "name": "videoDuration",
+              "value": "={{ $json.videoDuration }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        760,
+        20
+      ],
+      "id": "c0f3e27c-723f-4e94-bcb1-90482788338a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "videoPlayCount",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        980,
+        20
+      ],
+      "id": "3916d3a1-d82c-4829-9b1a-8b6ad37b721e",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "maxItems": 2
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        20
+      ],
+      "id": "a0262522-6379-484a-a62c-a51a33cdb2dd",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1420,
+        20
+      ],
+      "id": "a4fe3b0b-35d1-45f3-a33e-027f252fe028",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Limit').item.json.videoUrl }}",
+        "responseFormat": "file",
+        "options": {}
+      },
+      "id": "92723e59-04ce-4bcb-a639-07e493c26c66",
+      "name": "Download Video1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        1720,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1980,
+        120
+      ],
+      "id": "1ab681bd-61c5-46d8-ad54-bba554b17531",
+      "name": "OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "bT1qRci6VVoWzZs9",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app0AXhZfvnCn3U7W",
+          "mode": "list",
+          "cachedResultName": "Ig Scrapper",
+          "cachedResultUrl": "https://airtable.com/app0AXhZfvnCn3U7W"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblG4lIe69RCtwjIu",
+          "mode": "list",
+          "cachedResultName": "Videos",
+          "cachedResultUrl": "https://airtable.com/app0AXhZfvnCn3U7W/tblG4lIe69RCtwjIu"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Views": "={{ $('Loop Over Items1').item.json.videoPlayCount }}",
+            "Likes": "={{ $('Loop Over Items1').item.json.likesCount }}",
+            "Comments": "={{ $('Loop Over Items1').item.json.commentsCount }}",
+            "Caption": "={{ $('Loop Over Items1').item.json.caption }}",
+            "Creator": "edhonour",
+            "Video": "={{[{\"url\": $('Loop Over Items1').item.json.videoUrl}] }}",
+            "Date": "={{ $('Loop Over Items1').item.json.timestamp }}",
+            "Transcription": "={{ $json.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Caption",
+              "displayName": "Caption",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Creator",
+              "displayName": "Creator",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Video",
+              "displayName": "Video",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Views",
+              "displayName": "Views",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Likes",
+              "displayName": "Likes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Comments",
+              "displayName": "Comments",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Transcription",
+              "displayName": "Transcription",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2200,
+        120
+      ],
+      "id": "c7678923-f420-4f85-b43d-79d9fd458c7e",
+      "name": "Airtable2",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "LoFO9IsPgt57l0Cf",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "HTTP Request": [
+      {
+        "json": {
+          "inputUrl": "https://www.instagram.com/edhonour/",
+          "id": "3643241990041486304",
+          "type": "Video",
+          "shortCode": "DKPZUmHNcPg",
+          "caption": "Vibe coding Angular in cursor is a challenge so let’s try to create a component.",
+          "hashtags": [],
+          "mentions": [],
+          "url": "https://www.instagram.com/p/DKPZUmHNcPg/",
+          "commentsCount": 5,
+          "firstComment": "Amazing stuff💪💪🔥",
+          "latestComments": [
+            {
+              "id": "17883367311295401",
+              "text": "Amazing stuff💪💪🔥",
+              "ownerUsername": "softwarecares",
+              "ownerProfilePicUrl": "https://scontent-lga3-1.cdninstagram.com/v/t51.2885-19/485699074_648387394600970_4400113156496367047_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=scontent-lga3-1.cdninstagram.com&_nc_cat=102&_nc_oc=Q6cZ2QHv53xEdfll6iHANQssRpxfqrdgCtq04B7xuK9RoyVAaEmtqHT1rLXJLg1ZeRfd55-JbWoeEvP540gMugTGk3Yq&_nc_ohc=a8LzWBa2WVgQ7kNvwFmNbv4&_nc_gid=8erRBJa_O2lUcFyj-UWUIA&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfIn2_GXEg6sVXCc4_K03Eszz2tiyAjuUGQKefZJgqNBdA&oe=683FB473&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T13:19:35.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "12431397122",
+                "is_verified": false,
+                "profile_pic_url": "https://scontent-lga3-1.cdninstagram.com/v/t51.2885-19/485699074_648387394600970_4400113156496367047_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=scontent-lga3-1.cdninstagram.com&_nc_cat=102&_nc_oc=Q6cZ2QHv53xEdfll6iHANQssRpxfqrdgCtq04B7xuK9RoyVAaEmtqHT1rLXJLg1ZeRfd55-JbWoeEvP540gMugTGk3Yq&_nc_ohc=a8LzWBa2WVgQ7kNvwFmNbv4&_nc_gid=8erRBJa_O2lUcFyj-UWUIA&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfIn2_GXEg6sVXCc4_K03Eszz2tiyAjuUGQKefZJgqNBdA&oe=683FB473&_nc_sid=10d13b",
+                "username": "softwarecares"
+              }
+            },
+            {
+              "id": "18372386866121500",
+              "text": "👏👏",
+              "ownerUsername": "bibekdhkl",
+              "ownerProfilePicUrl": "https://scontent-lga3-3.cdninstagram.com/v/t51.2885-19/460988374_1039687447614018_8668806479131989605_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=scontent-lga3-3.cdninstagram.com&_nc_cat=106&_nc_oc=Q6cZ2QHv53xEdfll6iHANQssRpxfqrdgCtq04B7xuK9RoyVAaEmtqHT1rLXJLg1ZeRfd55-JbWoeEvP540gMugTGk3Yq&_nc_ohc=cpdSs1NegCwQ7kNvwH3r8mk&_nc_gid=8erRBJa_O2lUcFyj-UWUIA&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfI4TVVW8HUNrDhN2jqc53dWoOxlLHS4pOng3sY9hfbFgA&oe=683FBDA0&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T02:21:28.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "7104384200",
+                "is_verified": false,
+                "profile_pic_url": "https://scontent-lga3-3.cdninstagram.com/v/t51.2885-19/460988374_1039687447614018_8668806479131989605_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=scontent-lga3-3.cdninstagram.com&_nc_cat=106&_nc_oc=Q6cZ2QHv53xEdfll6iHANQssRpxfqrdgCtq04B7xuK9RoyVAaEmtqHT1rLXJLg1ZeRfd55-JbWoeEvP540gMugTGk3Yq&_nc_ohc=cpdSs1NegCwQ7kNvwH3r8mk&_nc_gid=8erRBJa_O2lUcFyj-UWUIA&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfI4TVVW8HUNrDhN2jqc53dWoOxlLHS4pOng3sY9hfbFgA&oe=683FBDA0&_nc_sid=10d13b",
+                "username": "bibekdhkl"
+              }
+            },
+            {
+              "id": "18346868590087521",
+              "text": "Oh wow 👀 🔥",
+              "ownerUsername": "artmomsue",
+              "ownerProfilePicUrl": "https://scontent-lga3-3.cdninstagram.com/v/t51.2885-19/437914009_1520386011859448_2242764299287737266_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=scontent-lga3-3.cdninstagram.com&_nc_cat=108&_nc_oc=Q6cZ2QHv53xEdfll6iHANQssRpxfqrdgCtq04B7xuK9RoyVAaEmtqHT1rLXJLg1ZeRfd55-JbWoeEvP540gMugTGk3Yq&_nc_ohc=cbTavDqlUZUQ7kNvwG3iNIF&_nc_gid=8erRBJa_O2lUcFyj-UWUIA&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfJPAbA9Oq7psnKeTmy21QRodZBXhAZ68EBfJkjnoWS6PA&oe=683FB529&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T01:59:48.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "405852299",
+                "is_verified": false,
+                "profile_pic_url": "https://scontent-lga3-3.cdninstagram.com/v/t51.2885-19/437914009_1520386011859448_2242764299287737266_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=scontent-lga3-3.cdninstagram.com&_nc_cat=108&_nc_oc=Q6cZ2QHv53xEdfll6iHANQssRpxfqrdgCtq04B7xuK9RoyVAaEmtqHT1rLXJLg1ZeRfd55-JbWoeEvP540gMugTGk3Yq&_nc_ohc=cbTavDqlUZUQ7kNvwG3iNIF&_nc_gid=8erRBJa_O2lUcFyj-UWUIA&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfJPAbA9Oq7psnKeTmy21QRodZBXhAZ68EBfJkjnoWS6PA&oe=683FB529&_nc_sid=10d13b",
+                "username": "artmomsue"
+              }
+            },
+            {
+              "id": "17880386043318137",
+              "text": "Looks like a fun challenge! 💻✨ Can't wait to see what you create with Angular! Keep it up! 😄",
+              "ownerUsername": "the_isaiah_dupree",
+              "ownerProfilePicUrl": "https://scontent-lga3-2.cdninstagram.com/v/t51.2885-19/446111604_3399146507046957_3359785142024127321_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=scontent-lga3-2.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2QHv53xEdfll6iHANQssRpxfqrdgCtq04B7xuK9RoyVAaEmtqHT1rLXJLg1ZeRfd55-JbWoeEvP540gMugTGk3Yq&_nc_ohc=Ju4PS_kpt9cQ7kNvwFN3xim&_nc_gid=8erRBJa_O2lUcFyj-UWUIA&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKLb6yD5yZSymwWlB9BmCUl4CPdilThCaLiz3wsq4SAiQ&oe=683FC405&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T00:46:40.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "66836557303",
+                "is_verified": false,
+                "profile_pic_url": "https://scontent-lga3-2.cdninstagram.com/v/t51.2885-19/446111604_3399146507046957_3359785142024127321_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=scontent-lga3-2.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2QHv53xEdfll6iHANQssRpxfqrdgCtq04B7xuK9RoyVAaEmtqHT1rLXJLg1ZeRfd55-JbWoeEvP540gMugTGk3Yq&_nc_ohc=Ju4PS_kpt9cQ7kNvwFN3xim&_nc_gid=8erRBJa_O2lUcFyj-UWUIA&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKLb6yD5yZSymwWlB9BmCUl4CPdilThCaLiz3wsq4SAiQ&oe=683FC405&_nc_sid=10d13b",
+                "username": "the_isaiah_dupree"
+              }
+            },
+            {
+              "id": "18061399390899572",
+              "text": "wow",
+              "ownerUsername": "pfejobs",
+              "ownerProfilePicUrl": "https://instagram.fmaa12-3.fna.fbcdn.net/v/t51.2885-19/44884218_345707102882519_2446069589734326272_n.jpg?_nc_ht=instagram.fmaa12-3.fna.fbcdn.net&_nc_cat=1&_nc_oc=Q6cZ2QEk2sk1ALQVswwMYBwLYR9GuzL8q5SRKD9PLZKw6wmCcnao-Xnb3_cpQ9jaAegTUbHMEA5ykkcQkNl_d6bhqYL5&_nc_ohc=yxd7iMyJfNMQ7kNvwFtAS2Q&edm=AAAAAAABAAAA&ccb=7-5&ig_cache_key=YW5vbnltb3VzX3Byb2ZpbGVfcGlj.3-ccb7-5&oh=00_AfK5jtHQcyUDWaqYhX-fRKltduKwckG9BV3s_Tfg05akYQ&oe=683FE44F&_nc_sid=328259",
+              "timestamp": "2025-05-29T15:30:22.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "71843759596",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fmaa12-3.fna.fbcdn.net/v/t51.2885-19/44884218_345707102882519_2446069589734326272_n.jpg?_nc_ht=instagram.fmaa12-3.fna.fbcdn.net&_nc_cat=1&_nc_oc=Q6cZ2QEk2sk1ALQVswwMYBwLYR9GuzL8q5SRKD9PLZKw6wmCcnao-Xnb3_cpQ9jaAegTUbHMEA5ykkcQkNl_d6bhqYL5&_nc_ohc=yxd7iMyJfNMQ7kNvwFtAS2Q&edm=AAAAAAABAAAA&ccb=7-5&ig_cache_key=YW5vbnltb3VzX3Byb2ZpbGVfcGlj.3-ccb7-5&oh=00_AfK5jtHQcyUDWaqYhX-fRKltduKwckG9BV3s_Tfg05akYQ&oe=683FE44F&_nc_sid=328259",
+                "username": "pfejobs"
+              }
+            }
+          ],
+          "dimensionsHeight": 1136,
+          "dimensionsWidth": 640,
+          "displayUrl": "https://scontent-lga3-2.cdninstagram.com/v/t51.2885-15/502551105_682221464419332_5508875738779165198_n.jpg?stp=dst-jpg_e15_tt6&_nc_ht=scontent-lga3-2.cdninstagram.com&_nc_cat=100&_nc_oc=Q6cZ2QHv53xEdfll6iHANQssRpxfqrdgCtq04B7xuK9RoyVAaEmtqHT1rLXJLg1ZeRfd55-JbWoeEvP540gMugTGk3Yq&_nc_ohc=1L7HPAIa2bEQ7kNvwGrsHy1&_nc_gid=8erRBJa_O2lUcFyj-UWUIA&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKnJF3fRm_WP67CZI8BdIp8p8Km0o257HTuBJ6QfR7PDg&oe=683FD849&_nc_sid=10d13b",
+          "images": [],
+          "videoUrl": "https://scontent-lga3-1.cdninstagram.com/o1/v/t16/f2/m86/AQOeZX9NxB6YGzxZFdcH9XENVACWvjtJWs6WI4e134NFTwyvEzWWBlja6lYN2coWba5PnLUaYh4Bhn2782Qch-ysEIO-nkS6ze_j4u8.mp4?stp=dst-mp4&efg=eyJxZV9ncm91cHMiOiJbXCJpZ193ZWJfZGVsaXZlcnlfdnRzX290ZlwiXSIsInZlbmNvZGVfdGFnIjoidnRzX3ZvZF91cmxnZW4uY2xpcHMuYzIuNzIwLmJhc2VsaW5lIn0&_nc_cat=111&vs=1899896760835466_1938659185&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC9FNzQ2QjEwOEY3NkE0RjFBOTlFODhCQTBEQzQ5NThBOV92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYOnBhc3N0aHJvdWdoX2V2ZXJzdG9yZS9HRllhN0IwUGU5bEZjbDBDQUNjWkd3RHlaR3dlYnFfRUFBQUYVAgLIARIAKAAYABsAFQAAJrzlopvf19A%2FFQIoAkMzLBdAWN3S8an75xgSZGFzaF9iYXNlbGluZV8xX3YxEQB1%2Fgdl5p0BAA%3D%3D&_nc_rid=1b6991751b&ccb=9-4&oh=00_AfJTPU1FNUpfwGUWH7iEmSzJWvZHZ46nG-7txx_C8Fgt8w&oe=683BE5F7&_nc_sid=10d13b",
+          "alt": null,
+          "likesCount": 238,
+          "videoViewCount": 0,
+          "videoPlayCount": 11836,
+          "timestamp": "2025-05-29T14:19:27.000Z",
+          "childPosts": [],
+          "ownerFullName": "Edward S Honour",
+          "ownerUsername": "edhonour",
+          "ownerId": "3285715609",
+          "productType": "clips",
+          "videoDuration": 99.496,
+          "isSponsored": false,
+          "isCommentsDisabled": false
+        }
+      },
+      {
+        "json": {
+          "inputUrl": "https://www.instagram.com/edhonour/",
+          "id": "3644081813191316262",
+          "type": "Video",
+          "shortCode": "DKSYRoXutMm",
+          "caption": "If you are an Oracle developer or DBA I recommend you take a deep dive into Retrieval Augmented Generation (RAG)",
+          "hashtags": [],
+          "mentions": [],
+          "url": "https://www.instagram.com/p/DKSYRoXutMm/",
+          "commentsCount": 0,
+          "firstComment": "",
+          "latestComments": [],
+          "dimensionsHeight": 1917,
+          "dimensionsWidth": 1080,
+          "displayUrl": "https://instagram.fixc2-2.fna.fbcdn.net/v/t51.2885-15/501153466_18401725255107610_7427172838837272906_n.jpg?stp=dst-jpg_e35_p1080x1080_sh0.08_tt6&_nc_ht=instagram.fixc2-2.fna.fbcdn.net&_nc_cat=110&_nc_oc=Q6cZ2QHGptaGNRQLyItaGGMBNPNji8KoMFYFmeYcbcANT4F42Wee7YFS0A9KHCzXZ3NaZUg&_nc_ohc=cZo3Pt7cmXwQ7kNvwG2N0Ts&_nc_gid=tmytZ8cuJPYYT4rvHx4EJA&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKHmvMpnwP_NEmMdXCruW6t6YxXs5GfeM0Wm2-3y5UBbQ&oe=683FB79B&_nc_sid=10d13b",
+          "images": [],
+          "videoUrl": "https://instagram.fixc2-2.fna.fbcdn.net/o1/v/t16/f2/m86/AQOnqytqPen1gXjVtYfU5fjHnr32hGFusAjrQit-maiuCY4vz78OyShob580CE_781KnUyhZoShG0xyM9CK19D2uEaA638aoX7z_TAQ.mp4?stp=dst-mp4&efg=eyJxZV9ncm91cHMiOiJbXCJpZ193ZWJfZGVsaXZlcnlfdnRzX290ZlwiXSIsInZlbmNvZGVfdGFnIjoidnRzX3ZvZF91cmxnZW4uY2xpcHMuYzIuNzIwLmJhc2VsaW5lIn0&_nc_cat=111&vs=1543863066593003_3646011025&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC80RjRCNTE2RDBBNEM0OEIzNzYwMzI0MEQ4MDgwRTlCM192aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYOnBhc3N0aHJvdWdoX2V2ZXJzdG9yZS9HT3h6NmgyVnkwMzh0OWdEQUlfRjhNTTZZLXRfYnFfRUFBQUYVAgLIARIAKAAYABsAFQAAJrzh4tjR4tA%2FFQIoAkMzLBdAUCQ5WBBiThgSZGFzaF9iYXNlbGluZV8xX3YxEQB1%2Fgdl5p0BAA%3D%3D&_nc_rid=f8f548410d&ccb=9-4&oh=00_AfIuei7_3R0MFaU3SBo5FmfyZcfwTK-18mLjRpjbdatELg&oe=683BF008&_nc_sid=10d13b",
+          "alt": null,
+          "likesCount": 113,
+          "videoViewCount": 0,
+          "videoPlayCount": 2363,
+          "timestamp": "2025-05-30T18:08:04.000Z",
+          "childPosts": [],
+          "ownerFullName": "Edward S Honour",
+          "ownerUsername": "edhonour",
+          "ownerId": "3285715609",
+          "productType": "clips",
+          "videoDuration": 64.597,
+          "isSponsored": false,
+          "musicInfo": {
+            "artist_name": "edhonour",
+            "song_name": "Original audio",
+            "uses_original_audio": true,
+            "should_mute_audio": false,
+            "should_mute_audio_reason": "",
+            "audio_id": "1390268862180388"
+          },
+          "isCommentsDisabled": false
+        }
+      },
+      {
+        "json": {
+          "inputUrl": "https://www.instagram.com/edhonour/",
+          "id": "3643519259028751718",
+          "type": "Video",
+          "shortCode": "DKQYXY-tAVm",
+          "caption": "Is AI going to replace your scrum master or just turn your sprint planning meetings into prompt writing sessions?",
+          "hashtags": [],
+          "mentions": [],
+          "url": "https://www.instagram.com/p/DKQYXY-tAVm/",
+          "commentsCount": 19,
+          "firstComment": "Agile was meant for Junior developer;  Junior developer roles will  shrink greatly while “AI-team manager” jobs boom.",
+          "latestComments": [
+            {
+              "id": "18047849807434137",
+              "text": "Agile was meant for Junior developer;  Junior developer roles will  shrink greatly while “AI-team manager” jobs boom.",
+              "ownerUsername": "mureithivincent",
+              "ownerProfilePicUrl": "https://instagram.fayt2-3.fna.fbcdn.net/v/t51.2885-19/396977482_326612609965059_7008781177548370204_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-3.fna.fbcdn.net&_nc_cat=103&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=0uBPfgXXKwgQ7kNvwF1M-3B&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKp_85dISWFQ0-UFsfIsJI2byd2sSDLGwgGstU8jyNONA&oe=683FE1DC&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T16:07:23.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "4306893372",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fayt2-3.fna.fbcdn.net/v/t51.2885-19/396977482_326612609965059_7008781177548370204_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-3.fna.fbcdn.net&_nc_cat=103&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=0uBPfgXXKwgQ7kNvwF1M-3B&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKp_85dISWFQ0-UFsfIsJI2byd2sSDLGwgGstU8jyNONA&oe=683FE1DC&_nc_sid=10d13b",
+                "username": "mureithivincent"
+              }
+            },
+            {
+              "id": "18087092689650966",
+              "text": "Agile, Waterflow were needed to help breakdown task and organize work. Project managers and scrum masters used made up deadlines to keep engineers on their toes. Work has now shifted up and right. We will not need task organizers. Might still need motivators to push engineers to think higher and go faster. Wonder what that role looks like.",
+              "ownerUsername": "vkrntinsta",
+              "ownerProfilePicUrl": "https://instagram.fcjb5-2.fna.fbcdn.net/v/t51.2885-19/464760996_1254146839119862_3605321457742435801_n.png?stp=dst-jpg_e0_s150x150_tt6&cb=8577c754-c2464923&_nc_ht=instagram.fcjb5-2.fna.fbcdn.net&_nc_cat=1&_nc_oc=Q6cZ2QGfiaso5KuN4pVSgiT_b7fbOtZofVb_fMg0ODi8rXGF44GNCvwBVvb74zq9xKKIdhV1pVIKm9ZOR6JiMXpfixNY&_nc_ohc=dbZjc1BozRcQ7kNvwHfHoCg&_nc_gid=WQXuXPrPQbzBRvYYDuonfA&edm=AL4D0a4BAAAA&ccb=7-5&ig_cache_key=YW5vbnltb3VzX3Byb2ZpbGVfcGlj.3-ccb7-5-cb8577c754-c2464923&oh=00_AfIb1qI9doWMksQwHNfbJpqhNLqPpxx75jMJ1WPl3vCZSw&oe=683FB7E8&_nc_sid=9e8221",
+              "timestamp": "2025-05-30T14:43:02.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "813799004",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fcjb5-2.fna.fbcdn.net/v/t51.2885-19/464760996_1254146839119862_3605321457742435801_n.png?stp=dst-jpg_e0_s150x150_tt6&cb=8577c754-c2464923&_nc_ht=instagram.fcjb5-2.fna.fbcdn.net&_nc_cat=1&_nc_oc=Q6cZ2QGfiaso5KuN4pVSgiT_b7fbOtZofVb_fMg0ODi8rXGF44GNCvwBVvb74zq9xKKIdhV1pVIKm9ZOR6JiMXpfixNY&_nc_ohc=dbZjc1BozRcQ7kNvwHfHoCg&_nc_gid=WQXuXPrPQbzBRvYYDuonfA&edm=AL4D0a4BAAAA&ccb=7-5&ig_cache_key=YW5vbnltb3VzX3Byb2ZpbGVfcGlj.3-ccb7-5-cb8577c754-c2464923&oh=00_AfIb1qI9doWMksQwHNfbJpqhNLqPpxx75jMJ1WPl3vCZSw&oe=683FB7E8&_nc_sid=9e8221",
+                "username": "vkrntinsta"
+              }
+            },
+            {
+              "id": "17983206476823970",
+              "text": "As long as you've got Continuous Delivery (DORA Metrics, etc), the rest will sort itself out",
+              "ownerUsername": "thomasghenry",
+              "ownerProfilePicUrl": "https://instagram.fayt2-2.fna.fbcdn.net/v/t51.2885-19/366502141_265047203051134_2317150417437631362_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-2.fna.fbcdn.net&_nc_cat=110&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=rpSHzFWxnMsQ7kNvwGtBiOr&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfJy55D0fSsfpgN3-9LR4XVwW9YHBAZfLSJshTx7Dykscw&oe=683FC63A&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T14:23:43.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "36566062",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fayt2-2.fna.fbcdn.net/v/t51.2885-19/366502141_265047203051134_2317150417437631362_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-2.fna.fbcdn.net&_nc_cat=110&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=rpSHzFWxnMsQ7kNvwGtBiOr&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfJy55D0fSsfpgN3-9LR4XVwW9YHBAZfLSJshTx7Dykscw&oe=683FC63A&_nc_sid=10d13b",
+                "username": "thomasghenry"
+              }
+            },
+            {
+              "id": "18045681827192639",
+              "text": "Well agree do disagree. Alot of Scrum Masters and product owners are redundant and no good. Then some can actually being value.by letting the team shine and remove problems. But in the end, every coder and team gets their payment to deliver something to someone. And that someone needs to know what is being made and decide on changes. Just like the dev team needs to listen to the design requirements. The scope is often floating. And therefore some people in between is needed to manage the risks around this. And to communicate vision. There are bad people in management. And there are power ego coders that create more havoc to the team than is acceptable. And a manager is needed for that. Not seeing this is signs of socially immature profiles",
+              "ownerUsername": "marcus_silverhawk",
+              "ownerProfilePicUrl": "https://instagram.fayt2-1.fna.fbcdn.net/v/t51.2885-19/436201451_355519583770109_5325930641405210564_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-1.fna.fbcdn.net&_nc_cat=105&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=S6nPirx5Hb0Q7kNvwEkvBAT&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKW1mCqg5FoyVUGyHeBun2QYyire2gWcRYbwMZfriPrzA&oe=683FD05B&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T13:44:58.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "279335812",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fayt2-1.fna.fbcdn.net/v/t51.2885-19/436201451_355519583770109_5325930641405210564_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-1.fna.fbcdn.net&_nc_cat=105&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=S6nPirx5Hb0Q7kNvwEkvBAT&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKW1mCqg5FoyVUGyHeBun2QYyire2gWcRYbwMZfriPrzA&oe=683FD05B&_nc_sid=10d13b",
+                "username": "marcus_silverhawk"
+              }
+            },
+            {
+              "id": "18089199547722860",
+              "text": "New dev process framework(s) are supposed to appear. Or. If the classic dev role will be replaced with AI then developers have to move up in the food chain. The problem is that other roles would also be taken by AI. What's the fun of writing prompts about architecture and not doing architecture!? Or, let's say to figure architecture not in days and months, but hours. Then what?",
+              "ownerUsername": "juriskazemaks",
+              "ownerProfilePicUrl": "https://instagram.fayt2-3.fna.fbcdn.net/v/t51.2885-19/20589544_1144599065641095_292491400321171456_a.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-3.fna.fbcdn.net&_nc_cat=103&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=IJrAuD31WG4Q7kNvwH7XSWu&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfJPrtchWJwRKORcGDprtKwwiY9zt4sB8HVaivyiB3CwzQ&oe=683FBB81&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T10:50:49.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "5835492801",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fayt2-3.fna.fbcdn.net/v/t51.2885-19/20589544_1144599065641095_292491400321171456_a.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-3.fna.fbcdn.net&_nc_cat=103&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=IJrAuD31WG4Q7kNvwH7XSWu&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfJPrtchWJwRKORcGDprtKwwiY9zt4sB8HVaivyiB3CwzQ&oe=683FBB81&_nc_sid=10d13b",
+                "username": "juriskazemaks"
+              }
+            },
+            {
+              "id": "18030159311448963",
+              "text": "Scrum meetings themselves are going to go away as the PMs and devs, QEs can use gpt tools provided by management software to figure out priorities, missing details, blockers etc",
+              "ownerUsername": "thewheelsanddreams",
+              "ownerProfilePicUrl": "https://instagram.fayt2-3.fna.fbcdn.net/v/t51.2885-19/336038678_6364716526895848_4519277566040416878_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-3.fna.fbcdn.net&_nc_cat=104&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=LZi7UR0HWB4Q7kNvwHgbfQq&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfIA-T661YDrqjdRyi3mIh10RFjme3sHn2XrBBaj0q3lGQ&oe=683FCB16&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T07:25:58.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "58349566549",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fayt2-3.fna.fbcdn.net/v/t51.2885-19/336038678_6364716526895848_4519277566040416878_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-3.fna.fbcdn.net&_nc_cat=104&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=LZi7UR0HWB4Q7kNvwHgbfQq&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfIA-T661YDrqjdRyi3mIh10RFjme3sHn2XrBBaj0q3lGQ&oe=683FCB16&_nc_sid=10d13b",
+                "username": "thewheelsanddreams"
+              }
+            },
+            {
+              "id": "18132735625421073",
+              "text": "The way people lose their mind about leaps in technology is kind of incredible. AI will become something that requires maintenance and trouble shooting. In my opinion, the human element will always be required to ensure quality of production. The job will just continue to reformat.",
+              "ownerUsername": "flowmentorbjj",
+              "ownerProfilePicUrl": "https://instagram.fayt2-3.fna.fbcdn.net/v/t51.2885-19/497939073_17852309433449751_2950792694650496320_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-3.fna.fbcdn.net&_nc_cat=103&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=psuY65pETsAQ7kNvwErmVzV&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKdidhf5js_zeWBtFWsp_XsiHmOdcntF8RqjQ1suS6pFA&oe=683FE97B&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T04:57:04.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 3,
+              "owner": {
+                "id": "73600009750",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fayt2-3.fna.fbcdn.net/v/t51.2885-19/497939073_17852309433449751_2950792694650496320_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-3.fna.fbcdn.net&_nc_cat=103&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=psuY65pETsAQ7kNvwErmVzV&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKdidhf5js_zeWBtFWsp_XsiHmOdcntF8RqjQ1suS6pFA&oe=683FE97B&_nc_sid=10d13b",
+                "username": "flowmentorbjj"
+              }
+            },
+            {
+              "id": "18044863391201873",
+              "text": "Great thought … become Quick Developers not Agile Developer",
+              "ownerUsername": "alokaroramca",
+              "ownerProfilePicUrl": "https://instagram.fayt2-2.fna.fbcdn.net/v/t51.2885-19/419821249_345487521678740_2008497282996438129_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-2.fna.fbcdn.net&_nc_cat=108&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=CavPwvvgYWkQ7kNvwHlrutQ&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKV7PWn8jSfR_l5exLYwrJNZlwdh4EWIV67zLgpE_QPtw&oe=683FD1B8&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T04:25:21.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "3208834967",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fayt2-2.fna.fbcdn.net/v/t51.2885-19/419821249_345487521678740_2008497282996438129_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-2.fna.fbcdn.net&_nc_cat=108&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=CavPwvvgYWkQ7kNvwHlrutQ&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKV7PWn8jSfR_l5exLYwrJNZlwdh4EWIV67zLgpE_QPtw&oe=683FD1B8&_nc_sid=10d13b",
+                "username": "alokaroramca"
+              }
+            },
+            {
+              "id": "18071285317760516",
+              "text": "🙌",
+              "ownerUsername": "unobrandon",
+              "ownerProfilePicUrl": "https://instagram.fayt2-3.fna.fbcdn.net/v/t51.2885-19/279393318_739910990717763_902144583898642189_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-3.fna.fbcdn.net&_nc_cat=103&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=PYhyuxOXopAQ7kNvwFW3J1Z&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKISSH1loClQ6YefydM8FEz2h9kFouOXmWOUs0KqMrDwA&oe=683FDF19&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T01:29:14.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "11548931",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fayt2-3.fna.fbcdn.net/v/t51.2885-19/279393318_739910990717763_902144583898642189_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-3.fna.fbcdn.net&_nc_cat=103&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=PYhyuxOXopAQ7kNvwFW3J1Z&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKISSH1loClQ6YefydM8FEz2h9kFouOXmWOUs0KqMrDwA&oe=683FDF19&_nc_sid=10d13b",
+                "username": "unobrandon"
+              }
+            },
+            {
+              "id": "18309009094213643",
+              "text": "I need some advise of yours on my product @edhonour 🙌",
+              "ownerUsername": "alireza.universe",
+              "ownerProfilePicUrl": "https://instagram.fayt2-1.fna.fbcdn.net/v/t51.2885-19/393022242_6713982615318245_1205465222919902773_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-1.fna.fbcdn.net&_nc_cat=105&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=QmMba0HZSIAQ7kNvwHgJaeh&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfLG8NoTZSYMlQuxf8xdUy1PKRL_VTKVqlAaYScgvNO-3w&oe=683FC070&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T00:39:07.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "1408255456",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fayt2-1.fna.fbcdn.net/v/t51.2885-19/393022242_6713982615318245_1205465222919902773_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fayt2-1.fna.fbcdn.net&_nc_cat=105&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=QmMba0HZSIAQ7kNvwHgJaeh&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfLG8NoTZSYMlQuxf8xdUy1PKRL_VTKVqlAaYScgvNO-3w&oe=683FC070&_nc_sid=10d13b",
+                "username": "alireza.universe"
+              }
+            }
+          ],
+          "dimensionsHeight": 1915,
+          "dimensionsWidth": 1080,
+          "displayUrl": "https://instagram.fayt2-2.fna.fbcdn.net/v/t51.2885-15/502466610_18401540593107610_5230181367161471494_n.jpg?stp=dst-jpg_e35_p1080x1080_sh0.08_tt6&_nc_ht=instagram.fayt2-2.fna.fbcdn.net&_nc_cat=110&_nc_oc=Q6cZ2QF4yYxjUVorAGt4d1dXzzbGjaRHTQbd05bYt1pjEyKO8qd5P2QIHfKhaeMD69wDBcQ&_nc_ohc=C8tpqf9QJuQQ7kNvwEMcJwJ&_nc_gid=NUXEnIHOhlD-dcOo45OhBw&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfJ2EyTgd7xhQvmWtuNfbjcDrDHbVdVpaDZQYXF7aA1Xdw&oe=683FCC88&_nc_sid=10d13b",
+          "images": [],
+          "videoUrl": "https://instagram.fayt2-3.fna.fbcdn.net/o1/v/t16/f2/m86/AQONlJMcr22LWWvh4TwTz8Ajb7QcFGmEh6fEcqqTJMMYvFNwYvtPd9nLDfE6vka_tt4i-5AKFcJIzsdSiUyedTSIRFn_bKbI6qU4QTs.mp4?stp=dst-mp4&efg=eyJxZV9ncm91cHMiOiJbXCJpZ193ZWJfZGVsaXZlcnlfdnRzX290ZlwiXSIsInZlbmNvZGVfdGFnIjoidnRzX3ZvZF91cmxnZW4uY2xpcHMuYzIuNzIwLmJhc2VsaW5lIn0&_nc_cat=103&vs=675795595252765_4033215984&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC80RDQ1NEIxOUVFRDcxMzlGNjY2MTlFOUJENUQyQThBOF92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYOnBhc3N0aHJvdWdoX2V2ZXJzdG9yZS9HQkpoNlIwc1ZrX3ZLMmdFQUFwb05oaU5IV3NLYnFfRUFBQUYVAgLIARIAKAAYABsAFQAAJrz6nojc2tA%2FFQIoAkMzLBdATQAAAAAAABgSZGFzaF9iYXNlbGluZV8xX3YxEQB1%2Fgdl5p0BAA%3D%3D&_nc_rid=74d49cc9e3&ccb=9-4&oh=00_AfJaFVilteV8r5EbnYQLNPfLeK-5SmfGJjrHo4FyLN3L6g&oe=683BF20F&_nc_sid=10d13b",
+          "alt": null,
+          "likesCount": 515,
+          "videoViewCount": 0,
+          "videoPlayCount": 15209,
+          "timestamp": "2025-05-29T23:30:39.000Z",
+          "childPosts": [],
+          "ownerFullName": "Edward S Honour",
+          "ownerUsername": "edhonour",
+          "ownerId": "3285715609",
+          "productType": "clips",
+          "videoDuration": 58.001,
+          "isSponsored": false,
+          "musicInfo": {
+            "artist_name": "edhonour",
+            "song_name": "Original audio",
+            "uses_original_audio": true,
+            "should_mute_audio": false,
+            "should_mute_audio_reason": "",
+            "audio_id": "1062638339115830"
+          },
+          "isCommentsDisabled": false
+        }
+      },
+      {
+        "json": {
+          "inputUrl": "https://www.instagram.com/edhonour/",
+          "id": "3644097452945487710",
+          "type": "Video",
+          "shortCode": "DKSb1OBuLde",
+          "caption": "The CEO of Anthropic predicted this week that 50% of entry level jobs will be eliminated in 5 years by AI. I don’t buy it.",
+          "hashtags": [],
+          "mentions": [],
+          "url": "https://www.instagram.com/p/DKSb1OBuLde/",
+          "commentsCount": 0,
+          "firstComment": "",
+          "latestComments": [],
+          "dimensionsHeight": 1919,
+          "dimensionsWidth": 1080,
+          "displayUrl": "https://scontent-ord5-3.cdninstagram.com/v/t51.2885-15/501263667_18401728378107610_183848736924516132_n.jpg?stp=dst-jpg_e35_p1080x1080_sh0.08_tt6&_nc_ht=scontent-ord5-3.cdninstagram.com&_nc_cat=110&_nc_oc=Q6cZ2QFwpMgaEbaq-a8SAtrUdG9hWq3OW1xh5F3jDUmqZaGXZrop7ySL3bytBHbSMGWi8nNW-cxQwYLJT_v2gP6g9WPu&_nc_ohc=3tOqkVO5-cQQ7kNvwEhzvX4&_nc_gid=tuZJfuShc6BpbBv4ekgFgQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKJOVPhbfoYH-s3lzvM_blPfddV6deMPqsfWIt4Cy0EAw&oe=683FB5D5&_nc_sid=10d13b",
+          "images": [],
+          "videoUrl": "https://scontent-ord5-3.cdninstagram.com/o1/v/t16/f2/m86/AQPm7SDyKsyYqBw8H-qpMF3_vQRTPHnWZq01zdtpUQhe9p0gy7ZekOyDJVce601q94ZmIZjDil4FZ7x20GPFiCGAZ4E7PQ7nMJwifpo.mp4?stp=dst-mp4&efg=eyJxZV9ncm91cHMiOiJbXCJpZ193ZWJfZGVsaXZlcnlfdnRzX290ZlwiXSIsInZlbmNvZGVfdGFnIjoidnRzX3ZvZF91cmxnZW4uY2xpcHMuYzIuNzIwLmJhc2VsaW5lIn0&_nc_cat=110&vs=2052872611871821_838019423&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC8yNDQ1NzM1MDkxRTJENDUyQUE2Qzg2MzdGN0E2OUM4Ql92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYOnBhc3N0aHJvdWdoX2V2ZXJzdG9yZS9HQkotNmgxTGU0VnZ4bXdFQUI5d0x6MVF2MXN6YnFfRUFBQUYVAgLIARIAKAAYABsAFQAAJrzs%2FsPn4tA%2FFQIoAkMzLBdAUYzMzMzMzRgSZGFzaF9iYXNlbGluZV8xX3YxEQB1%2Fgdl5p0BAA%3D%3D&_nc_rid=f82ab92bf6&ccb=9-4&oh=00_AfKXegy404PttiSbR6XFmHrUbEJmlGj34PdhU54mVsWKOw&oe=683BD5B9&_nc_sid=10d13b",
+          "alt": null,
+          "likesCount": 0,
+          "videoViewCount": 0,
+          "videoPlayCount": 0,
+          "timestamp": "2025-05-30T18:39:10.000Z",
+          "childPosts": [],
+          "ownerFullName": "Edward S Honour",
+          "ownerUsername": "edhonour",
+          "ownerId": "3285715609",
+          "productType": "clips",
+          "videoDuration": 70.239,
+          "isSponsored": false,
+          "musicInfo": {
+            "artist_name": "edhonour",
+            "song_name": "Original audio",
+            "uses_original_audio": true,
+            "should_mute_audio": false,
+            "should_mute_audio_reason": "",
+            "audio_id": "2226214247793196"
+          },
+          "isCommentsDisabled": false
+        }
+      },
+      {
+        "json": {
+          "inputUrl": "https://www.instagram.com/edhonour/",
+          "id": "3643525791472702530",
+          "type": "Video",
+          "shortCode": "DKQZ2cytFRC",
+          "caption": "Oracle is reportedly planning to purchase 400,000 NVIDIA GPUs for $40 Billion.",
+          "hashtags": [],
+          "mentions": [],
+          "url": "https://www.instagram.com/p/DKQZ2cytFRC/",
+          "commentsCount": 27,
+          "firstComment": "LLMS",
+          "latestComments": [
+            {
+              "id": "18066752039087434",
+              "text": "LLMS",
+              "ownerUsername": "iponikar",
+              "ownerProfilePicUrl": "https://instagram.fknu1-4.fna.fbcdn.net/v/t51.2885-19/491462416_18396096820108667_7241829923603866670_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-4.fna.fbcdn.net&_nc_cat=111&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=DYB9yD9L32wQ7kNvwFknH_7&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKEdYom4TYTADZqk9DezxFXs5LmI8SvJLKm7R4ri9KUzw&oe=683FB930&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T17:50:09.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "3241228666",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fknu1-4.fna.fbcdn.net/v/t51.2885-19/491462416_18396096820108667_7241829923603866670_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-4.fna.fbcdn.net&_nc_cat=111&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=DYB9yD9L32wQ7kNvwFknH_7&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKEdYom4TYTADZqk9DezxFXs5LmI8SvJLKm7R4ri9KUzw&oe=683FB930&_nc_sid=10d13b",
+                "username": "iponikar"
+              }
+            },
+            {
+              "id": "18071080967498728",
+              "text": "Well, they are just the money guy and IT guy in this case, procuring hardware, plugging the cables and leaving. They won’t own or run the data center. Crusoe is the cloud company we should be talking about as they are running everything.",
+              "ownerUsername": "arthurpmc5",
+              "ownerProfilePicUrl": "https://instagram.fknu1-1.fna.fbcdn.net/v/t51.2885-19/451450398_3740618569487796_6209378631421161518_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-1.fna.fbcdn.net&_nc_cat=100&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=XUIqYdPI6-8Q7kNvwGmqN4L&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfI-i7b48HqffhyLa6Qkpfo4i-lXoEA8MxARubQjAtHnLg&oe=683FE898&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T15:37:13.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "1189203",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fknu1-1.fna.fbcdn.net/v/t51.2885-19/451450398_3740618569487796_6209378631421161518_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-1.fna.fbcdn.net&_nc_cat=100&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=XUIqYdPI6-8Q7kNvwGmqN4L&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfI-i7b48HqffhyLa6Qkpfo4i-lXoEA8MxARubQjAtHnLg&oe=683FE898&_nc_sid=10d13b",
+                "username": "arthurpmc5"
+              }
+            },
+            {
+              "id": "17934539625019262",
+              "text": "Yes I have seen Microsoft partnerships first hand and it doesn’t surprise me that OpenAI is moving away… Microsoft has a tendency to make you overspend in their cloud services as a part of their deals",
+              "ownerUsername": "captainmarverousu",
+              "ownerProfilePicUrl": "https://instagram.fknu1-2.fna.fbcdn.net/v/t51.2885-19/433075827_1201340207916117_5827235104470872756_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-2.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=37PL-GcqhckQ7kNvwEeFwHy&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfLLpDdWb21GZm335pCj9JxPtmTi52pQ4e08vVG0grJITQ&oe=683FBBC5&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T14:30:21.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "3690686910",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fknu1-2.fna.fbcdn.net/v/t51.2885-19/433075827_1201340207916117_5827235104470872756_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-2.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=37PL-GcqhckQ7kNvwEeFwHy&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfLLpDdWb21GZm335pCj9JxPtmTi52pQ4e08vVG0grJITQ&oe=683FBBC5&_nc_sid=10d13b",
+                "username": "captainmarverousu"
+              }
+            },
+            {
+              "id": "18022880270695167",
+              "text": "OCI oracle call interface. At least that’s how I use it haha. Don’t know they had a division named the same as their connection interface. The more you know 🔥",
+              "ownerUsername": "techbridge.dev",
+              "ownerProfilePicUrl": "https://instagram.fknu1-2.fna.fbcdn.net/v/t51.2885-19/500572710_18517164559054048_655006760763667686_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-2.fna.fbcdn.net&_nc_cat=104&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=2pOBHmw2t3UQ7kNvwHnovPa&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfLnrLvRtuUyPVnuFiLwETDEytZpmDal8gO5lBjrPS4klQ&oe=683FC730&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T13:53:22.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "54966047",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fknu1-2.fna.fbcdn.net/v/t51.2885-19/500572710_18517164559054048_655006760763667686_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-2.fna.fbcdn.net&_nc_cat=104&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=2pOBHmw2t3UQ7kNvwHnovPa&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfLnrLvRtuUyPVnuFiLwETDEytZpmDal8gO5lBjrPS4klQ&oe=683FC730&_nc_sid=10d13b",
+                "username": "techbridge.dev"
+              }
+            },
+            {
+              "id": "17906819148050393",
+              "text": "\"on par\" not even close.",
+              "ownerUsername": "worldrider978",
+              "ownerProfilePicUrl": "https://instagram.fknu1-2.fna.fbcdn.net/v/t51.2885-19/340325821_913403373239817_5440908674961440496_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-2.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=LcG4Ku-boZoQ7kNvwEkSiZY&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKg_kctYKxAWMV1RV0TkvD9_GyXcvnde5MGxcjNolmB0g&oe=683FB761&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T11:07:40.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "59133793622",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fknu1-2.fna.fbcdn.net/v/t51.2885-19/340325821_913403373239817_5440908674961440496_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-2.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=LcG4Ku-boZoQ7kNvwEkSiZY&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKg_kctYKxAWMV1RV0TkvD9_GyXcvnde5MGxcjNolmB0g&oe=683FB761&_nc_sid=10d13b",
+                "username": "worldrider978"
+              }
+            },
+            {
+              "id": "18046448411167183",
+              "text": "Oracle and AI is like Sears and the Internet",
+              "ownerUsername": "osied",
+              "ownerProfilePicUrl": "https://instagram.fknu1-2.fna.fbcdn.net/v/t51.2885-19/471567194_1465195041063849_1879007858348201532_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-2.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=AKquwgo86TwQ7kNvwHHZNl3&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfLxia9VeeVjn26A-NyxQznkc8ZYZ_EBYl407xgVSZDqLA&oe=683FCE7C&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T09:02:33.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "22085600",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fknu1-2.fna.fbcdn.net/v/t51.2885-19/471567194_1465195041063849_1879007858348201532_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-2.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=AKquwgo86TwQ7kNvwHHZNl3&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfLxia9VeeVjn26A-NyxQznkc8ZYZ_EBYl407xgVSZDqLA&oe=683FCE7C&_nc_sid=10d13b",
+                "username": "osied"
+              }
+            },
+            {
+              "id": "17893887006237943",
+              "text": "It’s gonna be the new Ai based data center for all the upcoming powerful Ai models! Sama is also gonna build a new Ai devices so Stargate will be the main powerhouse for all that processing power & ai training! So I assume we’re going to have Samantha in our hands in 2026-2028! Hopefully!",
+              "ownerUsername": "agxagi_",
+              "ownerProfilePicUrl": "https://instagram.fknu1-2.fna.fbcdn.net/v/t51.2885-19/500141273_18009685037739885_1995133376661447840_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-2.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=2DAsgG81bfUQ7kNvwGPD0B-&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfLQlTcOGKUYI7phjuk89iZ4B7lVZLc-xhR7JQVfGPiPeg&oe=683FE0DA&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T07:19:29.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 2,
+              "owner": {
+                "id": "52283491884",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fknu1-2.fna.fbcdn.net/v/t51.2885-19/500141273_18009685037739885_1995133376661447840_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-2.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=2DAsgG81bfUQ7kNvwGPD0B-&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfLQlTcOGKUYI7phjuk89iZ4B7lVZLc-xhR7JQVfGPiPeg&oe=683FE0DA&_nc_sid=10d13b",
+                "username": "agxagi_"
+              }
+            },
+            {
+              "id": "18282296494266260",
+              "text": "What's your view on GCP ? How strong are they?",
+              "ownerUsername": "man._sh",
+              "ownerProfilePicUrl": "https://instagram.fknu1-4.fna.fbcdn.net/v/t51.2885-19/343077464_606706274715392_8276556020085258636_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-4.fna.fbcdn.net&_nc_cat=108&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=34OO7dKBpM4Q7kNvwGJcskp&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKdcbtyW5_VYZpBYAOXs4xTuI-B4PfdK-GQ1f9JGq9Ecw&oe=683FDA9D&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T06:35:33.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "8180539048",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fknu1-4.fna.fbcdn.net/v/t51.2885-19/343077464_606706274715392_8276556020085258636_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-4.fna.fbcdn.net&_nc_cat=108&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=34OO7dKBpM4Q7kNvwGJcskp&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKdcbtyW5_VYZpBYAOXs4xTuI-B4PfdK-GQ1f9JGq9Ecw&oe=683FDA9D&_nc_sid=10d13b",
+                "username": "man._sh"
+              }
+            },
+            {
+              "id": "17880502695328298",
+              "text": "",
+              "ownerUsername": "andy_mossop",
+              "ownerProfilePicUrl": "https://instagram.fknu1-6.fna.fbcdn.net/v/t51.2885-19/17662170_109597889585055_747353515281612800_a.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-6.fna.fbcdn.net&_nc_cat=103&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=mYH6XJHN5zwQ7kNvwE4iQ5a&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKWFgDt8rIXkkJ38Ep0zTY1my7b1sC5qFWJ2ym--DQBjg&oe=683FCFB5&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T06:19:44.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 1,
+              "owner": {
+                "id": "4976911345",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fknu1-6.fna.fbcdn.net/v/t51.2885-19/17662170_109597889585055_747353515281612800_a.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-6.fna.fbcdn.net&_nc_cat=103&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=mYH6XJHN5zwQ7kNvwE4iQ5a&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKWFgDt8rIXkkJ38Ep0zTY1my7b1sC5qFWJ2ym--DQBjg&oe=683FCFB5&_nc_sid=10d13b",
+                "username": "andy_mossop"
+              }
+            },
+            {
+              "id": "18047492624416227",
+              "text": "Maybe they want to compete with Azure AI Foundry",
+              "ownerUsername": "shoaibdsn",
+              "ownerProfilePicUrl": "https://instagram.fknu1-1.fna.fbcdn.net/v/t51.2885-19/499970350_18505350772014361_2879877426406031573_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-1.fna.fbcdn.net&_nc_cat=101&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=NMvVOcSD1e8Q7kNvwECUYua&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKNG1T6Gq2hNKOjg58qqNrH2a-H9LbCGCLpuLmu6suWWA&oe=683FCEED&_nc_sid=10d13b",
+              "timestamp": "2025-05-30T04:45:53.000Z",
+              "repliesCount": 0,
+              "replies": [],
+              "likesCount": 0,
+              "owner": {
+                "id": "1003214360",
+                "is_verified": false,
+                "profile_pic_url": "https://instagram.fknu1-1.fna.fbcdn.net/v/t51.2885-19/499970350_18505350772014361_2879877426406031573_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_ht=instagram.fknu1-1.fna.fbcdn.net&_nc_cat=101&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=NMvVOcSD1e8Q7kNvwECUYua&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfKNG1T6Gq2hNKOjg58qqNrH2a-H9LbCGCLpuLmu6suWWA&oe=683FCEED&_nc_sid=10d13b",
+                "username": "shoaibdsn"
+              }
+            }
+          ],
+          "dimensionsHeight": 1918,
+          "dimensionsWidth": 1080,
+          "displayUrl": "https://instagram.fknu1-3.fna.fbcdn.net/v/t51.2885-15/502770930_18401541406107610_6361039884058159072_n.jpg?stp=dst-jpg_e35_p1080x1080_sh0.08_tt6&_nc_ht=instagram.fknu1-3.fna.fbcdn.net&_nc_cat=110&_nc_oc=Q6cZ2QEey9rSOUDsMhaFzzlLpC0z5gBH3SyTaZpj_ca4Q3iifyzXnM6OM2vLdXI5sxAS-sI&_nc_ohc=Mv280AGXk0AQ7kNvwHRtmlf&_nc_gid=Cs41XN9rPeCb4WKbNW8zPQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfIXiMx9Wo__ypI16SG-e1EE6xJlZfROQEQuEJWpl3dCgA&oe=683FB3BE&_nc_sid=10d13b",
+          "images": [],
+          "videoUrl": "https://instagram.fknu1-1.fna.fbcdn.net/o1/v/t16/f2/m86/AQMZxL3AGBckghKY5fP7g0NrmEJEo5b3s_Jx6OUDLtm0d9Ll5nuZibGn8liWhdz41ubmPlOIOWOa1TH_fooaq-WYBf3hdENlfbXezrk.mp4?stp=dst-mp4&efg=eyJxZV9ncm91cHMiOiJbXCJpZ193ZWJfZGVsaXZlcnlfdnRzX290ZlwiXSIsInZlbmNvZGVfdGFnIjoidnRzX3ZvZF91cmxnZW4uY2xpcHMuYzIuNzIwLmJhc2VsaW5lIn0&_nc_cat=100&vs=1946406139520717_2251610807&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC9ERjQxRTQ5NzlGRTNDMTI1MDI0NkM0NjQyNkM0Njk5MF92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYOnBhc3N0aHJvdWdoX2V2ZXJzdG9yZS9HTlNBNXgwR05kaC1sRnNFQUNJRTZMaDVPdThBYnFfRUFBQUYVAgLIARIAKAAYABsAFQAAJrz1icPi2tA%2FFQIoAkMzLBdAVAzMzMzMzRgSZGFzaF9iYXNlbGluZV8xX3YxEQB1%2Fgdl5p0BAA%3D%3D&_nc_rid=9808d9a220&ccb=9-4&oh=00_AfKyZed7q4WxbKc2lPmYI_nFZBV37HwyRbtI6geU_rR_eQ&oe=683BEB82&_nc_sid=10d13b",
+          "alt": null,
+          "likesCount": 1391,
+          "videoViewCount": 0,
+          "videoPlayCount": 32725,
+          "timestamp": "2025-05-29T23:44:08.000Z",
+          "childPosts": [],
+          "ownerFullName": "Edward S Honour",
+          "ownerUsername": "edhonour",
+          "ownerId": "3285715609",
+          "productType": "clips",
+          "videoDuration": 80.223,
+          "isSponsored": false,
+          "musicInfo": {
+            "artist_name": "edhonour",
+            "song_name": "Original audio",
+            "uses_original_audio": true,
+            "should_mute_audio": false,
+            "should_mute_audio_reason": "",
+            "audio_id": "724987153305887"
+          },
+          "isCommentsDisabled": false
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Audio": {
+      "main": [
+        [
+          {
+            "node": "Update Transcription",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download Video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Video1": {
+      "main": [
+        [
+          {
+            "node": "OpenAI1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI1": {
+      "main": [
+        [
+          {
+            "node": "Airtable2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "36375048-c4e9-4546-9753-16d2894e40ce",
+  "meta": {
+    "instanceId": "a5ad660676cf0daa676be4e32078322ddf3238442ea6de13c1c05b645cf1e707"
+  },
+  "id": "InJjvyClzSpRNkeU",
+  "tags": []
+}
